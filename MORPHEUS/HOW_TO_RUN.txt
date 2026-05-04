@@ -1,0 +1,388 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║              🚀 MORPHEUS-X: COMPLETE SETUP & RUN GUIDE                      ║
+║                                                                              ║
+║          How to Install, Configure, and Run the System                      ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+⚠️ IMPORTANT: WHERE TO RUN COMMANDS FROM
+═══════════════════════════════════════════════════════════════════════════════
+
+ALL commands must be run from the PROJECT ROOT directory:
+
+  d:\Project\MORPHEUS
+
+NOT from:
+  ❌ d:\Project\MORPHEUS\tests
+  ❌ d:\Project\MORPHEUS\docs
+  ❌ d:\Project\MORPHEUS\core
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                              STEP-BY-STEP SETUP
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Navigate to Project Root
+────────────────────────────────────────────────────────────────────────────
+
+Open PowerShell and navigate to the project root:
+
+  cd d:\Project\MORPHEUS
+
+You should see this prompt:
+  PS D:\Project\MORPHEUS>
+
+
+STEP 2: Verify Python Installation
+────────────────────────────────────────────────────────────────────────────
+
+Check that Python is installed:
+
+  python --version
+
+You should see something like:
+  Python 3.12.0
+
+If not, install Python 3.7+ from python.org
+
+
+STEP 3: Create Virtual Environment (If Not Already Created)
+────────────────────────────────────────────────────────────────────────────
+
+  python -m venv .venv
+
+This creates a virtual environment in the .venv folder.
+
+
+STEP 4: Activate Virtual Environment
+────────────────────────────────────────────────────────────────────────────
+
+  .\.venv\Scripts\activate
+
+After activation, your prompt should show (.venv):
+
+  (.venv) PS D:\Project\MORPHEUS>
+
+
+STEP 5: Install Dependencies
+────────────────────────────────────────────────────────────────────────────
+
+  pip install -r requirements.txt
+
+This installs the pefile package required for PE analysis.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                         HOW TO RUN THE PROJECT
+═══════════════════════════════════════════════════════════════════════════════
+
+Always from: d:\Project\MORPHEUS (NOT from tests/ folder!)
+
+
+OPTION 1: RUN INDIVIDUAL TESTS
+────────────────────────────────────────────────────────────────────────────
+
+Test Stage 1 (Static Analyzer):
+  python tests/test_static.py
+
+Test Stage 2 (Behavior Intelligence):
+  python tests/test_behavior.py
+
+Test Stage 3 (Detection Engineering):
+  python tests/test_detection.py
+
+
+OPTION 2: RUN FULL SYSTEM VERIFICATION
+────────────────────────────────────────────────────────────────────────────
+
+Verify entire system:
+  python setup_and_verify.py
+
+This runs all stages and generates YARA rules.
+
+
+OPTION 3: ANALYZE A FILE
+────────────────────────────────────────────────────────────────────────────
+
+Put your malware sample in: d:\Project\MORPHEUS\data\uploads\
+
+Then run:
+  python
+
+Then in Python:
+
+    from core.analyzer import analyze_file
+    from core.risk_engine import calculate_risk_score
+    
+    # Analyze the file
+    analysis = analyze_file("data/uploads/sample.exe")
+    
+    # Calculate risk
+    risk = calculate_risk_score(analysis)
+    
+    print(f"Risk Score: {risk['risk_score']}/100")
+    print(f"Risk Level: {risk['risk_level']}")
+
+
+OPTION 4: GENERATE YARA RULE
+────────────────────────────────────────────────────────────────────────────
+
+In Python:
+
+    from core.analyzer import analyze_file
+    from core.yara_generator import generate_yara_rule, export_rule_to_file
+    
+    # Analyze file
+    analysis = analyze_file("data/uploads/sample.exe")
+    
+    # Generate YARA rule
+    rule = generate_yara_rule(analysis, rule_name="my_malware")
+    
+    # Export to file
+    export_rule_to_file(rule, "rules/my_malware.yar")
+    
+    print("YARA rule saved to: rules/my_malware.yar")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           COMMON MISTAKES
+═══════════════════════════════════════════════════════════════════════════════
+
+❌ MISTAKE 1: Running from tests folder
+────────────────────────────────────────────────────────────────────────────
+
+Wrong:
+  PS D:\Project\MORPHEUS\tests> python test_static.py
+  Error: ModuleNotFoundError: No module named 'core'
+
+Right:
+  PS D:\Project\MORPHEUS> python tests/test_static.py
+  (works correctly)
+
+REASON: The test files import from 'core' which is at the parent directory level.
+
+
+❌ MISTAKE 2: Double path in command
+────────────────────────────────────────────────────────────────────────────
+
+Wrong:
+  python tests/tests/test_static.py
+  Error: No such file or directory
+
+Right:
+  python tests/test_static.py
+
+REASON: Don't repeat the folder name in the path.
+
+
+❌ MISTAKE 3: Not activating virtual environment
+────────────────────────────────────────────────────────────────────────────
+
+Wrong:
+  PS D:\Project\MORPHEUS> python test_static.py
+  Error: ModuleNotFoundError
+
+Right:
+  PS D:\Project\MORPHEUS> .\.venv\Scripts\activate
+  (.venv) PS D:\Project\MORPHEUS> python tests/test_static.py
+
+REASON: The virtual environment contains installed packages (pefile, etc).
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                        FOLDER STRUCTURE REMINDER
+═══════════════════════════════════════════════════════════════════════════════
+
+d:\Project\MORPHEUS/              ← RUN COMMANDS FROM HERE
+├── core/                         ← Core analysis modules
+│   ├── analyzer.py
+│   ├── risk_engine.py
+│   ├── behavior_predictor.py
+│   ├── mitre_mapper.py
+│   ├── yara_generator.py
+│   └── similarity_engine.py
+├── tests/                        ← Test files (run from root!)
+│   ├── test_static.py
+│   ├── test_behavior.py
+│   └── test_detection.py
+├── docs/                         ← Documentation
+│   ├── behavior/
+│   └── detection/
+├── rules/                        ← Generated YARA rules output
+├── data/
+│   └── uploads/                  ← Put sample files here
+├── README.md                     ← Project documentation
+└── setup_and_verify.py          ← Verification script
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                        QUICK START CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+☐ 1. Open PowerShell
+☐ 2. Navigate to: cd d:\Project\MORPHEUS
+☐ 3. Activate venv: .\.venv\Scripts\activate
+☐ 4. Install deps: pip install -r requirements.txt
+☐ 5. Run tests: python tests/test_static.py
+☐ 6. Verify system: python setup_and_verify.py
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                         WHAT EACH TEST DOES
+═══════════════════════════════════════════════════════════════════════════════
+
+test_static.py
+  ├─ Tests PE file reading
+  ├─ Tests entropy calculation
+  ├─ Tests string extraction
+  ├─ Tests API detection
+  └─ Expected result: PASS (or shows what files it's testing)
+
+test_behavior.py
+  ├─ Tests risk scoring (0-100)
+  ├─ Tests behavior prediction (10 behaviors)
+  ├─ Tests MITRE ATT&CK mapping (16+ techniques)
+  ├─ Tests integration workflow
+  └─ Expected result: Multiple test results shown
+
+test_detection.py
+  ├─ Tests YARA rule generation
+  ├─ Tests similarity analysis
+  ├─ Tests batch operations
+  ├─ Tests file export (.yar and .json)
+  └─ Expected result: Multiple test results and file exports
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                      NEXT STEPS AFTER SUCCESSFUL RUN
+═══════════════════════════════════════════════════════════════════════════════
+
+1. READ THE DOCUMENTATION
+   • README.md - System overview
+   • docs/behavior/GUIDE.md - Behavior Intelligence guide
+   • docs/detection/GUIDE.md - Detection Engineering guide
+
+2. RUN FULL VERIFICATION
+   python setup_and_verify.py
+
+3. ANALYZE YOUR OWN FILES
+   • Place malware samples in data/uploads/
+   • Use the code examples in docs/behavior/USAGE_EXAMPLES.py
+   • Use the code examples in docs/detection/USAGE_EXAMPLES.py
+
+4. GENERATE YARA RULES
+   • Follow examples in docs/detection/QUICK_REFERENCE.md
+   • Export rules in .yar format for your scanning tools
+
+5. PERFORM SIMILARITY ANALYSIS
+   • Find malware variants
+   • Cluster malware families
+   • Build threat intelligence
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                        TROUBLESHOOTING REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+Problem: "ModuleNotFoundError: No module named 'core'"
+Solution: Run from PROJECT ROOT (d:\Project\MORPHEUS), not from tests folder
+
+Problem: "Python command not found"
+Solution: 
+  - Make sure Python is installed: python --version
+  - Use full path if needed: d:\path\to\python.exe script.py
+
+Problem: "Virtual environment not activating"
+Solution: Run this from project root:
+  .\.venv\Scripts\activate
+
+Problem: "pefile module not found"
+Solution: Install dependencies from project root:
+  pip install -r requirements.txt
+
+Problem: "Can't find data/uploads folder"
+Solution: Create it manually:
+  mkdir data
+  mkdir data\uploads
+
+Problem: "Tests show errors"
+Solution:
+  1. Make sure you're in project root: cd d:\Project\MORPHEUS
+  2. Virtual environment is activated: .\.venv\Scripts\activate
+  3. Dependencies installed: pip install -r requirements.txt
+  4. Then run: python tests/test_static.py
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                        COMPLETE EXAMPLE SESSION
+═══════════════════════════════════════════════════════════════════════════════
+
+C:\Users\YourName> cd d:\Project\MORPHEUS
+
+PS D:\Project\MORPHEUS> .\.venv\Scripts\activate
+
+(.venv) PS D:\Project\MORPHEUS> pip install -r requirements.txt
+Collecting pefile...
+Successfully installed pefile
+
+(.venv) PS D:\Project\MORPHEUS> python tests/test_static.py
+Testing Static Analyzer...
+✓ PE file analysis working
+✓ All tests passed!
+
+(.venv) PS D:\Project\MORPHEUS> python tests/test_behavior.py
+Testing Behavior Intelligence...
+✓ Risk scoring working
+✓ Behavior prediction working
+✓ MITRE mapping working
+✓ All tests passed!
+
+(.venv) PS D:\Project\MORPHEUS> python tests/test_detection.py
+Testing Detection Engineering...
+✓ YARA generation working
+✓ Similarity analysis working
+✓ All tests passed!
+
+(.venv) PS D:\Project\MORPHEUS> python setup_and_verify.py
+Running full system verification...
+✓ YARA rules generated
+✓ Similarity analysis completed
+✓ System verification complete!
+
+(.venv) PS D:\Project\MORPHEUS> python
+Python 3.12.0 (main, Oct 2 2024, 12:00:00)
+>>> from core.analyzer import analyze_file
+>>> analysis = analyze_file("data/uploads/sample.exe")
+>>> print(analysis['file_name'])
+sample.exe
+>>> exit()
+
+(.venv) PS D:\Project\MORPHEUS>
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            SUPPORT RESOURCES
+═══════════════════════════════════════════════════════════════════════════════
+
+Quick Reference (5-minute read):
+  • docs/behavior/QUICK_REFERENCE.md
+  • docs/detection/QUICK_REFERENCE.md
+
+Comprehensive Guide (deep dive):
+  • docs/behavior/GUIDE.md
+  • docs/detection/GUIDE.md
+
+Code Examples (learn by example):
+  • docs/behavior/USAGE_EXAMPLES.py
+  • docs/detection/USAGE_EXAMPLES.py
+
+Main Documentation:
+  • README.md (system overview)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+You now have everything you need to run MORPHEUS-X successfully! 🚀
+
+Start with: python tests/test_static.py (from project root)

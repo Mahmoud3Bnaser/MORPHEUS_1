@@ -1,0 +1,9 @@
+pefile>=0.9.3
+streamlit>=1.28.0
+plotly>=5.17.0
+pandas>=2.0.0
+reportlab>=4.0.0
+pillow>=10.0.0
+python-dateutil>=2.8.2
+pytz>=2023.3
+yara-python>=4.3.0
